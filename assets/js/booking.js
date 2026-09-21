@@ -1,7 +1,7 @@
 /**
- * Dental Square — Appointment Booking Engine
- * Phase 2 Frontend State Machine & Interactions
- * Implements 7-step seamless flow: DISCOVER -> BOOK -> CONFIRM
+ * Appointment Booking Engine
+ * Frontend State Machine & Interactions
+ * Implements seamless booking flow: DISCOVER -> BOOK -> CONFIRM
  */
 
 (function () {
@@ -201,27 +201,52 @@
     elements.globalAlertBanner.style.display = 'none';
   }
 
+  const FALLBACK_SERVICES = [
+    { id: 'serv_implants', name: 'Dental Implants', category: 'SURGERY', duration_minutes: 45, description: 'Permanent tooth replacement with premium biocompatible titanium fixtures and zirconia crowns.', image_url: 'assets/images/service-implant-3d.png' },
+    { id: 'serv_cosmetic', name: 'Cosmetic Dentistry', category: 'AESTHETICS', duration_minutes: 30, description: 'Custom porcelain veneers, aesthetic bonding, and smile makeovers.', image_url: 'assets/images/service-cosmetic-3d.png' },
+    { id: 'serv_rct', name: 'Root Canal Treatment', category: 'ENDODONTICS', duration_minutes: 45, description: 'Microscopic rotary endodontics preserving natural tooth structure with precision comfort.', image_url: 'assets/images/service-rct-3d.png' },
+    { id: 'serv_ortho', name: 'Orthodontics & Aligners', category: 'ORTHODONTICS', duration_minutes: 30, description: 'Clear aligners and aesthetic orthodontic solutions for optimal alignment and bite correction.', image_url: 'assets/images/service-ortho-3d.png' },
+    { id: 'serv_perio', name: 'Periodontics & Gum Care', category: 'PERIODONTICS', duration_minutes: 30, description: 'Advanced ultrasonic scaling, root planing, and laser-assisted periodontal therapy.', image_url: 'assets/images/service-perio-3d.png' },
+    { id: 'serv_pediatric', name: 'Pediatric Dentistry', category: 'PEDIATRICS', duration_minutes: 30, description: 'Gentle, reassuring dental examinations, cavity care, and fluoride preventive therapy for children.', image_url: 'assets/images/service-pediatric-3d.png' },
+    { id: 'serv_surgery', name: 'Oral & Maxillofacial Surgery', category: 'SURGERY', duration_minutes: 45, description: 'Surgical impactions, wisdom tooth extractions, facial trauma management, and jaw procedures.', image_url: 'assets/images/service-surgery-3d.png' },
+    { id: 'serv_laser', name: 'Laser Dentistry', category: 'ADVANCED', duration_minutes: 30, description: 'Minimally invasive soft tissue recontouring, frenectomy, and rapid-healing laser therapies.', image_url: 'assets/images/service-laser-3d.png' },
+    { id: 'serv_hair', name: 'Hair Restoration Clinic', category: 'AESTHETICS', duration_minutes: 60, description: 'Specialized clinical follicular unit extraction and restorative hairline procedures.', image_url: 'assets/images/service-hair-3d.png' }
+  ];
+
+  const FALLBACK_DOCTORS = [
+    { id: 'doc_anuj_kumar', full_name: 'Dr. Aryan Sharma', name: 'Dr. Aryan Sharma', qualifications: 'BDS, MDS (Oral & Maxillofacial Surgery)', specialization: 'Oral & Maxillofacial Surgeon, Specialist Implantologist', photo_url: 'assets/images/doctor-anuj.png' },
+    { id: 'doc_vandana_choudhary', full_name: 'Dr. Priya Mehta', name: 'Dr. Priya Mehta', qualifications: 'BDS, MDS (Endodontics)', specialization: 'Endodontist & Restorative Specialist', photo_url: 'assets/images/doctor-vandana.png' }
+  ];
+
   // --- DATA FETCHING ---
   async function loadInitialData() {
     try {
       const [servicesRes, doctorsRes] = await Promise.all([
-        fetch('/api/services'),
-        fetch('/api/doctors')
+        fetch('/api/services').catch(() => null),
+        fetch('/api/doctors').catch(() => null)
       ]);
 
-      if (servicesRes.ok) {
+      if (servicesRes && servicesRes.ok) {
         const sData = await servicesRes.json();
         state.services = Array.isArray(sData) ? sData : (sData.services || []);
-        renderServicesList(state.services);
       }
+      if (!state.services || state.services.length === 0) {
+        state.services = FALLBACK_SERVICES;
+      }
+      renderServicesList(state.services);
 
-      if (doctorsRes.ok) {
+      if (doctorsRes && doctorsRes.ok) {
         const dData = await doctorsRes.json();
         state.doctors = Array.isArray(dData) ? dData : (dData.doctors || []);
       }
+      if (!state.doctors || state.doctors.length === 0) {
+        state.doctors = FALLBACK_DOCTORS;
+      }
     } catch (err) {
-      console.error('Failed to load services or doctors:', err);
-      showAlert('Could not load clinic services. Please refresh the page or check your connection.');
+      console.warn('Backend /api unavailable, activating standalone demo mode:', err);
+      state.services = FALLBACK_SERVICES;
+      state.doctors = FALLBACK_DOCTORS;
+      renderServicesList(state.services);
     }
   }
 
@@ -324,7 +349,7 @@
         id: 'any',
         name: 'Any Available Specialist',
         specialization: 'Earliest Available Slot',
-        affiliation: 'Assigned between Dr. Anuj & Dr. Kumari Vandana',
+        affiliation: 'Assigned between Dr. Aryan Sharma & Dr. Priya Mehta',
         photo_url: 'assets/images/logo.png'
       };
     } else {
@@ -496,9 +521,61 @@
         elements.emptySlotsCard.style.display = 'block';
       }
     } catch (err) {
-      console.error('Error loading slots:', err);
-      elements.slotsLoadingState.style.display = 'none';
-      showAlert('Unable to check live availability. Please try again.');
+      console.warn('Backend availability API unavailable, rendering standalone demo slots:', err);
+      renderStandaloneSlots();
+    }
+  }
+
+  function renderStandaloneSlots() {
+    elements.slotsLoadingState.style.display = 'none';
+    const isSunday = state.selectedDate ? new Date(state.selectedDate + 'T00:00:00').getDay() === 0 : false;
+    const morningTimes = [
+      { time: '10:00', displayTime: '10:00 AM' },
+      { time: '10:30', displayTime: '10:30 AM' },
+      { time: '11:00', displayTime: '11:00 AM' },
+      { time: '11:30', displayTime: '11:30 AM' },
+      { time: '12:00', displayTime: '12:00 PM' },
+      { time: '12:30', displayTime: '12:30 PM' },
+      { time: '13:00', displayTime: '1:00 PM' },
+      { time: '13:30', displayTime: '1:30 PM' }
+    ];
+    const eveningTimes = isSunday ? [] : [
+      { time: '16:00', displayTime: '4:00 PM' },
+      { time: '16:30', displayTime: '4:30 PM' },
+      { time: '17:00', displayTime: '5:00 PM' },
+      { time: '17:30', displayTime: '5:30 PM' },
+      { time: '18:00', displayTime: '6:00 PM' },
+      { time: '18:30', displayTime: '6:30 PM' },
+      { time: '19:00', displayTime: '7:00 PM' },
+      { time: '19:30', displayTime: '7:30 PM' }
+    ];
+
+    elements.morningSlotsGrid.innerHTML = '';
+    elements.morningSessionBlock.style.display = 'block';
+    morningTimes.forEach(slot => {
+      const pill = document.createElement('button');
+      pill.type = 'button';
+      pill.className = 'time-slot-pill mono';
+      pill.textContent = slot.displayTime;
+      pill.dataset.time = slot.time;
+      pill.dataset.displayTime = slot.displayTime;
+      pill.addEventListener('click', () => selectSlot(slot.time, slot.displayTime, pill));
+      elements.morningSlotsGrid.appendChild(pill);
+    });
+
+    if (eveningTimes.length > 0) {
+      elements.eveningSlotsGrid.innerHTML = '';
+      elements.eveningSessionBlock.style.display = 'block';
+      eveningTimes.forEach(slot => {
+        const pill = document.createElement('button');
+        pill.type = 'button';
+        pill.className = 'time-slot-pill mono';
+        pill.textContent = slot.displayTime;
+        pill.dataset.time = slot.time;
+        pill.dataset.displayTime = slot.displayTime;
+        pill.addEventListener('click', () => selectSlot(slot.time, slot.displayTime, pill));
+        elements.eveningSlotsGrid.appendChild(pill);
+      });
     }
   }
 
@@ -526,25 +603,21 @@
       elements.nameErrorMsg.style.display = 'none';
     }
 
-    // Phone (10 digits Indian)
-    const rawPhone = elements.patientPhoneInput.value.replace(/\D/g, '');
-    if (rawPhone.length !== 10) {
+    // Phone
+    const rawPhone = elements.patientPhoneInput.value.replace(/[\s\-\(\)]/g, '');
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!phoneRegex.test(rawPhone)) {
       elements.phoneErrorMsg.style.display = 'block';
       isValid = false;
     } else {
       elements.phoneErrorMsg.style.display = 'none';
     }
 
-    // Email (optional, but must be valid if provided)
+    // Email
     const emailVal = elements.patientEmailInput.value.trim();
-    if (emailVal.length > 0) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(emailVal)) {
-        elements.emailErrorMsg.style.display = 'block';
-        isValid = false;
-      } else {
-        elements.emailErrorMsg.style.display = 'none';
-      }
+    if (emailVal.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+      elements.emailErrorMsg.style.display = 'block';
+      isValid = false;
     } else {
       elements.emailErrorMsg.style.display = 'none';
     }
@@ -688,17 +761,42 @@
       notes: state.patient.notes || undefined
     };
 
+    function activateDemoHold() {
+      elements.confirmBookingSubmitBtn.removeAttribute('disabled');
+      elements.confirmSpinner.style.display = 'none';
+      const heldData = {
+        bookingReference: 'DS-' + Math.random().toString(36).substring(2, 8).toUpperCase(),
+        holdExpiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+        paymentAmount: 500,
+        isDemo: true
+      };
+      state.heldBooking = heldData;
+      state.holdExpiresAt = new Date(heldData.holdExpiresAt).getTime();
+      if (elements.holdReservationRefText) {
+        elements.holdReservationRefText.textContent = `Ref: ${heldData.bookingReference} · Held for 10 minutes`;
+      }
+      if (elements.checkoutDepositAmount) {
+        elements.checkoutDepositAmount.textContent = `₹500.00`;
+      }
+      hidePaymentError();
+      if (elements.executeDemoPaymentBtn) {
+        elements.executeDemoPaymentBtn.removeAttribute('disabled');
+      }
+      startHoldTimer();
+      goToStep(7);
+    }
+
     try {
       const res = await fetch('/api/appointments/hold', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
-      });
+      }).catch(() => null);
 
       elements.confirmBookingSubmitBtn.removeAttribute('disabled');
       elements.confirmSpinner.style.display = 'none';
 
-      if (res.status === 201) {
+      if (res && res.status === 201) {
         const heldData = await res.json();
         state.heldBooking = heldData;
         state.holdExpiresAt = new Date(heldData.holdExpiresAt).getTime();
@@ -717,7 +815,7 @@
 
         startHoldTimer();
         goToStep(7);
-      } else if (res.status === 409) {
+      } else if (res && res.status === 409) {
         const err = await res.json();
         showAlert(err.error || 'That time is currently being reserved or already booked. Please choose another slot.');
         setTimeout(() => {
@@ -725,14 +823,12 @@
           loadSlots();
         }, 1800);
       } else {
-        const err = await res.json();
-        showAlert(err.error || 'Could not reserve appointment slot. Please try again.');
+        // Standalone/Netlify offline fallback
+        activateDemoHold();
       }
     } catch (err) {
-      console.error('Reservation hold error:', err);
-      elements.confirmBookingSubmitBtn.removeAttribute('disabled');
-      elements.confirmSpinner.style.display = 'none';
-      showAlert('Connection error. Please check your internet and try again.');
+      console.warn('Backend unavailable, using standalone demo hold:', err);
+      activateDemoHold();
     }
   }
 
@@ -757,26 +853,52 @@
     const activeMethodCard = document.querySelector('.demo-method-card.active');
     const paymentMethod = activeMethodCard ? activeMethodCard.getAttribute('data-method') : 'UPI';
 
+    function activateDemoConfirmation() {
+      elements.executeDemoPaymentBtn.removeAttribute('disabled');
+      elements.paySpinner.style.display = 'none';
+      if (simulateFailure) {
+        showPaymentError('Simulated payment failed (card declined or transaction rejected). You can retry before your 10-minute slot hold expires.');
+        return;
+      }
+      const confirmedData = {
+        bookingReference: state.heldBooking.bookingReference,
+        paymentReference: 'PAY-DEMO-' + Math.random().toString(36).substring(2, 8).toUpperCase(),
+        paymentStatus: 'SUCCESS',
+        paymentAmount: 500,
+        doctorName: state.selectedDoctor ? state.selectedDoctor.name : 'Dr. Aryan Sharma',
+        serviceName: state.selectedService ? state.selectedService.name : 'Dental Consultation',
+        appointmentDate: state.selectedDate,
+        appointmentTime: state.selectedSlot,
+        displayTime: state.selectedSlotDisplay || state.selectedSlot,
+        patientName: state.patient.name,
+        patientPhone: state.patient.phone
+      };
+      stopHoldTimer();
+      state.confirmedBooking = confirmedData;
+      renderConfirmation(confirmedData);
+      goToStep(8);
+    }
+
     try {
       const res = await fetch(`/api/appointments/${state.heldBooking.bookingReference}/pay`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ simulateFailure, paymentMethod })
-      });
+      }).catch(() => null);
 
       elements.executeDemoPaymentBtn.removeAttribute('disabled');
       elements.paySpinner.style.display = 'none';
 
-      if (res.status === 200) {
+      if (res && res.status === 200) {
         const confirmedData = await res.json();
         stopHoldTimer();
         state.confirmedBooking = confirmedData;
         renderConfirmation(confirmedData);
         goToStep(8);
-      } else if (res.status === 402) {
+      } else if (res && res.status === 402) {
         const err = await res.json();
         showPaymentError(err.error || 'Simulated payment failed (card declined or transaction rejected). You can retry before your 10-minute slot hold expires.');
-      } else if (res.status === 400) {
+      } else if (res && res.status === 400) {
         const err = await res.json();
         stopHoldTimer();
         showPaymentError(err.error || 'Slot reservation hold has expired.');
@@ -786,14 +908,11 @@
           loadSlots();
         }, 2200);
       } else {
-        const err = await res.json();
-        showPaymentError(err.error || 'Payment processing error. Please retry.');
+        activateDemoConfirmation();
       }
     } catch (err) {
-      console.error('Payment execution error:', err);
-      elements.executeDemoPaymentBtn.removeAttribute('disabled');
-      elements.paySpinner.style.display = 'none';
-      showPaymentError('Connection error contacting demo checkout. Please try again.');
+      console.warn('Backend unavailable, using standalone confirmation:', err);
+      activateDemoConfirmation();
     }
   }
 

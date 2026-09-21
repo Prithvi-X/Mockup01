@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dental Square — Clinic Dashboard &amp; Live Queue</title>
-  <meta name="description" content="Internal operational dashboard and live patient queue console for Dental Square, Lalpur, Ranchi.">
+  <title>Apex Dental Studio — Clinic Dashboard &amp; Live Queue</title>
+  <meta name="description" content="Internal operational dashboard and live patient queue console for Apex Dental Studio.">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="assets/images/favicon.png">
@@ -25,11 +25,11 @@
   <header class="dash-site-header" role="banner">
     <div class="dash-header-inner">
       <div class="dash-brand-block">
-        <a href="dashboard.html" class="dash-brand-wrap" aria-label="Dental Square Dashboard Home">
-          <img src="assets/images/logo.png" alt="Dental Square Logo" class="dash-brand-logo">
+        <a href="dashboard.html" class="dash-brand-wrap" aria-label="Apex Dental Studio Dashboard Home">
+          <img src="assets/images/logo.png" alt="Apex Dental Studio Logo" class="dash-brand-logo">
           <div class="dash-brand-text">
-            <span class="dash-brand-title">DENTAL SQUARE</span>
-            <span class="dash-brand-subtitle mono">CLINIC CONSOLE &middot; LALPUR</span>
+            <span class="dash-brand-title">APEX DENTAL STUDIO</span>
+            <span class="dash-brand-subtitle mono">CLINIC CONSOLE &middot; PRACTICE OPERATIONS</span>
           </div>
         </a>
       </div>
@@ -58,7 +58,7 @@
         <div class="dash-staff-badge-wrap" id="staffBadgeWrap">
           <div class="dash-staff-pill">
             <span class="staff-role-pill mono" id="staffRoleBadge">RECEPTION</span>
-            <span class="staff-name-text" id="staffNameDisplay">Dental Square Reception</span>
+            <span class="staff-name-text" id="staffNameDisplay">Clinic Reception</span>
           </div>
           <button type="button" class="btn-staff-auth-switch" id="staffSwitchBtn" title="Switch Staff Session / Enter PIN">
             Switch Staff PIN
@@ -180,14 +180,14 @@
     <section class="dash-tab-panel active" id="panelTodayFlow" role="tabpanel" aria-labelledby="tabTodayFlow">
       <div class="flow-lanes-container">
         
-        <!-- Doctor Lane 1: Dr. Anuj Kumar -->
+        <!-- Doctor Lane 1: Dr. Aryan Sharma -->
         <article class="doctor-flow-lane" id="laneDrAnuj">
           <div class="doctor-lane-header">
             <div class="lane-doctor-info">
-              <img src="assets/images/doctor-anuj.png" alt="Dr. Anuj Kumar" class="lane-doc-avatar" width="46" height="46">
+              <img src="assets/images/doctor-anuj.png" alt="Dr. Aryan Sharma" class="lane-doc-avatar" width="46" height="46">
               <div>
-                <h2 class="lane-doc-name">Dr. Anuj Kumar</h2>
-                <div class="lane-doc-meta mono">Oral &amp; Maxillofacial Surgeon, Certified Implantologist &middot; 14 Yrs Exp</div>
+                <h2 class="lane-doc-name">Dr. Aryan Sharma</h2>
+                <div class="lane-doc-meta mono">Oral &amp; Maxillofacial Surgeon, Certified Implantologist &middot; 15+ Yrs Exp</div>
               </div>
             </div>
             <div class="lane-queue-badge mono" id="queueDepthAnuj">Queue: 0 Waiting</div>
@@ -201,7 +201,7 @@
                 <span class="stage-time-elapsed mono" id="nowElapsedAnuj">--</span>
               </div>
               <div class="stage-content" id="nowContentAnuj">
-                <div class="stage-empty-text">Ready for consultation with Dr. Anuj Kumar</div>
+                <div class="stage-empty-text">Ready for consultation with Dr. Aryan Sharma</div>
               </div>
               <div class="stage-footer" id="nowFooterAnuj"></div>
             </div>
@@ -220,14 +220,14 @@
           </div>
         </article>
 
-        <!-- Doctor Lane 2: Dr. Kumari Vandana Chaudhury -->
+        <!-- Doctor Lane 2: Dr. Priya Mehta -->
         <article class="doctor-flow-lane" id="laneDrVandana">
           <div class="doctor-lane-header">
             <div class="lane-doctor-info">
-              <img src="assets/images/doctor-vandana.png" alt="Dr. Kumari Vandana Chaudhury" class="lane-doc-avatar" width="46" height="46">
+              <img src="assets/images/doctor-vandana.png" alt="Dr. Priya Mehta" class="lane-doc-avatar" width="46" height="46">
               <div>
-                <h2 class="lane-doc-name">Dr. Kumari Vandana Chaudhury</h2>
-                <div class="lane-doc-meta mono">BDS-Dental, MDS-Endodontics &middot; Operatory 2</div>
+                <h2 class="lane-doc-name">Dr. Priya Mehta</h2>
+                <div class="lane-doc-meta mono">BDS, MDS - Endodontics &middot; Operatory 2</div>
               </div>
             </div>
             <div class="lane-queue-badge mono" id="queueDepthVandana">Queue: 0 Waiting</div>
@@ -241,7 +241,7 @@
                 <span class="stage-time-elapsed mono" id="nowElapsedVandana">--</span>
               </div>
               <div class="stage-content" id="nowContentVandana">
-                <div class="stage-empty-text">Ready for consultation with Dr. Kumari Vandana Chaudhury</div>
+                <div class="stage-empty-text">Ready for consultation with Dr. Priya Mehta</div>
               </div>
               <div class="stage-footer" id="nowFooterVandana"></div>
             </div>
@@ -273,8 +273,8 @@
             <label for="filterDoctor" class="filter-label mono">DOCTOR:</label>
             <select id="filterDoctor" class="dash-select">
               <option value="all">All Specialists</option>
-              <option value="doc_anuj_kumar">Dr. Anuj Kumar</option>
-              <option value="doc_vandana_choudhary">Dr. Kumari Vandana Chaudhury</option>
+              <option value="doc_anuj_kumar">Dr. Aryan Sharma</option>
+              <option value="doc_vandana_choudhary">Dr. Priya Mehta</option>
             </select>
           </div>
 
@@ -331,8 +331,8 @@
           </span>
           <div class="queue-filter-tabs">
             <button type="button" class="q-filter-btn active" data-q-doc="all">All Doctors</button>
-            <button type="button" class="q-filter-btn" data-q-doc="doc_anuj_kumar">Dr. Anuj Kumar</button>
-            <button type="button" class="q-filter-btn" data-q-doc="doc_vandana_choudhary">Dr. Kumari Vandana Chaudhury</button>
+            <button type="button" class="q-filter-btn" data-q-doc="doc_anuj_kumar">Dr. Aryan Sharma</button>
+            <button type="button" class="q-filter-btn" data-q-doc="doc_vandana_choudhary">Dr. Priya Mehta</button>
           </div>
         </div>
 
@@ -527,7 +527,7 @@
       <!-- Live Interactive WhatsApp Preview -->
       <div class="whatsapp-preview-container">
         <div class="whatsapp-bubble-header">
-          <span>&bull; Dental Square Ranchi (Official WhatsApp)</span>
+          <span>&bull; Apex Dental Studio (Official Practice Messaging)</span>
           <span class="mono">CONFIDENTIAL</span>
         </div>
         <div class="whatsapp-bubble" id="waBubbleContent">
@@ -609,7 +609,7 @@
           </div>
           <div>
             <label for="fuAssignedInput" class="filter-label mono">ASSIGNED TO</label>
-            <input type="text" id="fuAssignedInput" class="dash-search-box" value="Dental Square Reception">
+            <input type="text" id="fuAssignedInput" class="dash-search-box" value="Clinic Reception">
           </div>
         </div>
 
@@ -643,11 +643,11 @@
           <span class="preset-role-pin mono">PIN 1024</span>
         </button>
         <button type="button" class="preset-role-btn" data-pin="2048">
-          <span class="preset-role-title">Dr. Anuj Kumar</span>
+          <span class="preset-role-title">Dr. Aryan Sharma</span>
           <span class="preset-role-pin mono">PIN 2048</span>
         </button>
         <button type="button" class="preset-role-btn" data-pin="4096">
-          <span class="preset-role-title">Dr. Kumari Vandana Chaudhury</span>
+          <span class="preset-role-title">Dr. Priya Mehta</span>
           <span class="preset-role-pin mono">PIN 4096</span>
         </button>
         <button type="button" class="preset-role-btn" data-pin="8192">

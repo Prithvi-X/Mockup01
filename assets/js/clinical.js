@@ -1,5 +1,5 @@
 /**
- * Dental Square — Clinical Workspace Logic
+ * Clinical Workspace Logic
  * Phase 4 Implementation
  * Powers the interactive FDI odontogram, tooth inspector, treatment planning,
  * clinical notes, immutable prescriptions, and longitudinal patient timeline.
@@ -12,7 +12,7 @@
   const state = {
     token: sessionStorage.getItem('ds_staff_token') || null,
     role: sessionStorage.getItem('ds_staff_role') || 'dentist',
-    staffName: sessionStorage.getItem('ds_staff_name') || 'Dr. Anuj Kumar',
+    staffName: sessionStorage.getItem('ds_staff_name') || 'Dr. Aryan Sharma',
     doctorId: sessionStorage.getItem('ds_doctor_id') || 'doc_anuj_kumar',
     patientId: null,
     appointmentRef: null,
@@ -205,7 +205,7 @@
 
     // Authenticate / restore session
     if (!state.token) {
-      await loginWithPin('2048'); // Default bootstrap: Dr. Anuj Kumar
+      await loginWithPin('2048'); // Default bootstrap: Dr. Aryan Sharma
     } else {
       try {
         const res = await apiFetch('/api/auth/me');
@@ -1268,7 +1268,7 @@
 
     const variables = {
       patient_name: p.full_name || 'Valued Patient',
-      doctor_name: state.staffName || 'Dr. Anuj Kumar',
+      doctor_name: state.staffName || 'Dr. Aryan Sharma',
       appointment_date: new Date().toISOString().split('T')[0],
       appointment_time: '10:00 AM',
       booking_reference: state.appointmentRef || 'DS-000000',
@@ -1308,7 +1308,7 @@
 
     const variables = {
       patient_name: p.full_name || 'Valued Patient',
-      doctor_name: state.staffName || 'Dr. Anuj Kumar',
+      doctor_name: state.staffName || 'Dr. Aryan Sharma',
       appointment_date: new Date().toISOString().split('T')[0],
       appointment_time: '10:00 AM',
       booking_reference: state.appointmentRef || 'DS-000000',

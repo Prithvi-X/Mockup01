@@ -1,5 +1,5 @@
 /**
- * Dental Square — WhatsApp Communication Service & Provider Layer
+ * Modern Dental Clinic Platform — WhatsApp Communication Service & Provider Layer
  * Phase 5 Implementation
  * 
  * Provides:
@@ -27,11 +27,13 @@ const {
   getFollowUpById
 } = require('./db');
 
+const { clinicConfig } = require('./clinic-config');
+
 // Verified Clinic Details Authority
 const CLINIC_DEFAULTS = {
-  clinic_name: 'Dental Square',
-  clinic_address: '1st Floor, Amravati Complex, Circular Road, Lalpur, Ranchi, Jharkhand 834001',
-  clinic_phone: '+91 98869 82522'
+  clinic_name: clinicConfig.clinicName || 'Apex Dental Studio',
+  clinic_address: clinicConfig.address || 'Suite 400, Healthcare Plaza, Medical Center Boulevard, Metro City 560001',
+  clinic_phone: clinicConfig.phone || '+91 98765 43210'
 };
 
 // Approved Variable Registry (Zero unapproved or medical diagnostic variables permitted)
@@ -472,8 +474,8 @@ class CommunicationService {
 
     const validTokens = [
       process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN,
-      'dental_square_webhook_token_lalpur',
-      'dental_square_webhook_secret_2026'
+      'dental_clinic_webhook_token',
+      'apex_dental_webhook_secret_2026'
     ].filter(Boolean);
 
     if (mode === 'subscribe' && validTokens.includes(token)) {

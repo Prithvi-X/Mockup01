@@ -1,6 +1,6 @@
 /**
- * Dental Square — Database Layer (Phase 2 Booking Engine)
- * Built with Node.js v25 native SQLite (node:sqlite)
+ * Clinic Management System — Database Layer (Phase 2 Booking Engine)
+ * Native node:sqlite implementation with atomic concurrency guarantees
  * Zero external npm dependencies. ACID compliant with double-booking protection.
  */
 
@@ -432,10 +432,10 @@ if (practitionerCount === 0) {
 
   insertPractitioner.run(
     'doc_anuj_kumar',
-    'Dr. Anuj Kumar',
+    'Dr. Aryan Sharma',
     'BDS, MDS (Oral & Maxillofacial Surgery), Certified Implantologist',
-    'Oral & Maxillofacial Surgeon, Implantologist',
-    'Consultant - Medica Hospital | Reg: 28901-A (KSDC) | 14 Yrs Exp',
+    'Oral & Maxillofacial Surgeon, Specialist Implantologist',
+    'Senior Specialist · Oral & Maxillofacial Surgery | 15+ Yrs Exp',
     'Operatory 1',
     JSON.stringify(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']),
     '10:00',
@@ -444,43 +444,53 @@ if (practitionerCount === 0) {
 
   insertPractitioner.run(
     'doc_vandana_choudhary',
-    'Dr. Kumari Vandana Chaudhury',
-    'BDS-Dental, MDS-Endodontics',
-    'Dentist · Endodontist',
-    'Dental Square, Lalpur, Ranchi | 33 Yrs Exp',
+    'Dr. Priya Mehta',
+    'BDS, MDS (Conservative Dentistry & Endodontics)',
+    'Specialist Endodontist · Restorative Dentist',
+    'Apex Dental Studio | 18+ Yrs Exp',
     'Operatory 2',
     JSON.stringify(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']),
     '10:00',
     '19:30'
   );
 
-  console.log('[DB] Seeded verified Dental Square practitioners.');
+  console.log('[DB] Seeded verified clinic practitioners.');
 }
 
-// Synchronize verified doctor qualifications, working hours, and credentials
+// Synchronize generic specialist credentials and names across database
 try {
   db.exec(`
     UPDATE practitioners 
-    SET qualifications = 'BDS, MDS (Oral & Maxillofacial Surgery), Certified Implantologist',
-        working_hours_end = '19:30',
-        affiliations = 'Consultant - Medica Hospital | Reg: 28901-A (KSDC) | 14 Yrs Exp'
+    SET full_name = 'Dr. Aryan Sharma',
+        qualifications = 'BDS, MDS (Oral & Maxillofacial Surgery), Certified Implantologist',
+        specialization = 'Oral & Maxillofacial Surgeon, Specialist Implantologist',
+        affiliations = 'Senior Specialist · Oral & Maxillofacial Surgery | 15+ Yrs Exp',
+        working_hours_end = '19:30'
     WHERE id = 'doc_anuj_kumar';
 
     UPDATE practitioners 
-    SET full_name = 'Dr. Kumari Vandana Chaudhury',
-        qualifications = 'BDS-Dental, MDS-Endodontics',
-        specialization = 'Dentist · Endodontist',
-        affiliations = 'Dental Square, Lalpur, Ranchi | 33 Yrs Exp',
+    SET full_name = 'Dr. Priya Mehta',
+        qualifications = 'BDS, MDS (Conservative Dentistry & Endodontics)',
+        specialization = 'Specialist Endodontist · Restorative Dentist',
+        affiliations = 'Apex Dental Studio | 18+ Yrs Exp',
         working_hours_end = '19:30'
     WHERE id = 'doc_vandana_choudhary';
 
     UPDATE appointments
-    SET doctor_name = 'Dr. Kumari Vandana Chaudhury'
-    WHERE doctor_id = 'doc_vandana_choudhary';
+    SET doctor_name = 'Dr. Aryan Sharma'
+    WHERE doctor_id = 'doc_anuj_kumar' OR doctor_name LIKE '%Anuj%';
+
+    UPDATE appointments
+    SET doctor_name = 'Dr. Priya Mehta'
+    WHERE doctor_id = 'doc_vandana_choudhary' OR doctor_name LIKE '%Vandana%';
 
     UPDATE queue_entries
-    SET doctor_name = 'Dr. Kumari Vandana Chaudhury'
-    WHERE doctor_id = 'doc_vandana_choudhary';
+    SET doctor_name = 'Dr. Aryan Sharma'
+    WHERE doctor_id = 'doc_anuj_kumar' OR doctor_name LIKE '%Anuj%';
+
+    UPDATE queue_entries
+    SET doctor_name = 'Dr. Priya Mehta'
+    WHERE doctor_id = 'doc_vandana_choudhary' OR doctor_name LIKE '%Vandana%';
   `);
 } catch (err) {
   console.error('[DB SYNC ERROR]', err.message);
@@ -573,11 +583,54 @@ if (serviceCount === 0) {
     insertService.run(s.id, s.name, s.category, s.duration_minutes, s.description, s.image_url);
   }
 
-  console.log('[DB] Seeded 9 verified Dental Square services.');
+  console.log('[DB] Seeded 9 verified clinic services.');
 }
 
 // Seed Approved WhatsApp Message Templates (Phase 5)
 const templateCount = db.prepare('SELECT COUNT(*) as count FROM message_templates').get().count;
+const approvedTemplates = [
+  {
+    id: 'tpl_appt_confirm',
+    name: 'Appointment Confirmation',
+    category: 'APPOINTMENT_CONFIRMATION',
+    identifier: 'ds_appointment_confirmation',
+    body: 'Hello {{patient_name}}, your appointment at {{clinic_name}} with {{doctor_name}} is confirmed for {{appointment_date}} at {{appointment_time}}. Booking ref: {{booking_reference}}. Clinic: {{clinic_address}}.',
+    vars: JSON.stringify(['patient_name', 'doctor_name', 'appointment_date', 'appointment_time', 'booking_reference', 'clinic_name', 'clinic_address'])
+  },
+  {
+    id: 'tpl_appt_reminder',
+    name: 'Appointment Reminder',
+    category: 'APPOINTMENT_REMINDER',
+    identifier: 'ds_appointment_reminder',
+    body: 'Hello {{patient_name}}, this is a friendly reminder of your upcoming visit to {{clinic_name}} with {{doctor_name}} on {{appointment_date}} at {{appointment_time}}. Ref: {{booking_reference}}. Please arrive 10 minutes prior.',
+    vars: JSON.stringify(['patient_name', 'doctor_name', 'appointment_date', 'appointment_time', 'booking_reference', 'clinic_name'])
+  },
+  {
+    id: 'tpl_followup_reminder',
+    name: 'Follow-up Reminder',
+    category: 'FOLLOW_UP_REMINDER',
+    identifier: 'ds_follow_up_reminder',
+    body: 'Hello {{patient_name}}, this is a reminder from {{clinic_name}} regarding your scheduled follow-up on {{follow_up_date}}. Please reach out to our clinic if you need to adjust your timing.',
+    vars: JSON.stringify(['patient_name', 'follow_up_date', 'clinic_name', 'clinic_phone'])
+  },
+  {
+    id: 'tpl_recall_reminder',
+    name: 'Routine Dental Recall',
+    category: 'RECALL_REMINDER',
+    identifier: 'ds_recall_reminder',
+    body: 'Hello {{patient_name}}, it has been several months since your last dental review at {{clinic_name}}. Regular preventative care keeps your smile healthy. Please let us know if you would like to schedule your routine check-up.',
+    vars: JSON.stringify(['patient_name', 'clinic_name', 'clinic_phone'])
+  },
+  {
+    id: 'tpl_appt_change',
+    name: 'Appointment Reschedule / Change',
+    category: 'APPOINTMENT_CHANGE',
+    identifier: 'ds_appointment_change',
+    body: 'Hello {{patient_name}}, your appointment with {{doctor_name}} at {{clinic_name}} has been updated to {{appointment_date}} at {{appointment_time}}. Ref: {{booking_reference}}.',
+    vars: JSON.stringify(['patient_name', 'doctor_name', 'appointment_date', 'appointment_time', 'booking_reference', 'clinic_name'])
+  }
+];
+
 if (templateCount === 0) {
   const insertTemplate = db.prepare(`
     INSERT INTO message_templates (
@@ -586,54 +639,17 @@ if (templateCount === 0) {
   `);
 
   const nowIso = new Date().toISOString();
-  const approvedTemplates = [
-    {
-      id: 'tpl_appt_confirm',
-      name: 'Appointment Confirmation',
-      category: 'APPOINTMENT_CONFIRMATION',
-      identifier: 'ds_appointment_confirmation',
-      body: 'Hello {{patient_name}}, your appointment at Dental Square with {{doctor_name}} is confirmed for {{appointment_date}} at {{appointment_time}}. Booking ref: {{booking_reference}}. Clinic: 1st Floor, Amravati Complex, Circular Road, Lalpur, Ranchi.',
-      vars: JSON.stringify(['patient_name', 'doctor_name', 'appointment_date', 'appointment_time', 'booking_reference', 'clinic_name', 'clinic_address'])
-    },
-    {
-      id: 'tpl_appt_reminder',
-      name: 'Appointment Reminder',
-      category: 'APPOINTMENT_REMINDER',
-      identifier: 'ds_appointment_reminder',
-      body: 'Hello {{patient_name}}, this is a friendly reminder of your upcoming visit to Dental Square with {{doctor_name}} on {{appointment_date}} at {{appointment_time}}. Ref: {{booking_reference}}. Please arrive 10 minutes prior.',
-      vars: JSON.stringify(['patient_name', 'doctor_name', 'appointment_date', 'appointment_time', 'booking_reference'])
-    },
-    {
-      id: 'tpl_followup_reminder',
-      name: 'Follow-up Reminder',
-      category: 'FOLLOW_UP_REMINDER',
-      identifier: 'ds_follow_up_reminder',
-      body: 'Hello {{patient_name}}, this is a reminder from Dental Square regarding your scheduled follow-up on {{follow_up_date}}. Please reach out to the clinic if you need to adjust your timing.',
-      vars: JSON.stringify(['patient_name', 'follow_up_date', 'clinic_name', 'clinic_phone'])
-    },
-    {
-      id: 'tpl_recall_reminder',
-      name: 'Routine Dental Recall',
-      category: 'RECALL_REMINDER',
-      identifier: 'ds_recall_reminder',
-      body: 'Hello {{patient_name}}, it has been several months since your last dental review at Dental Square. Regular preventative care keeps your smile healthy. Please let us know if you would like to schedule your routine check-up.',
-      vars: JSON.stringify(['patient_name', 'clinic_name', 'clinic_phone'])
-    },
-    {
-      id: 'tpl_appt_change',
-      name: 'Appointment Reschedule / Change',
-      category: 'APPOINTMENT_CHANGE',
-      identifier: 'ds_appointment_change',
-      body: 'Hello {{patient_name}}, your appointment with {{doctor_name}} at Dental Square has been updated to {{appointment_date}} at {{appointment_time}}. Ref: {{booking_reference}}.',
-      vars: JSON.stringify(['patient_name', 'doctor_name', 'appointment_date', 'appointment_time', 'booking_reference'])
-    }
-  ];
-
   for (const t of approvedTemplates) {
     insertTemplate.run(t.id, t.name, t.category, t.identifier, t.body, t.vars, nowIso, nowIso);
   }
 
-  console.log('[DB] Seeded 5 approved Dental Square WhatsApp message templates.');
+  console.log('[DB] Seeded 5 approved clinic WhatsApp message templates.');
+} else {
+  // Synchronize templates to ensure generic placeholders
+  const updateTemplate = db.prepare('UPDATE message_templates SET body_preview = ?, variables_schema = ? WHERE id = ?');
+  for (const t of approvedTemplates) {
+    updateTemplate.run(t.body, t.vars, t.id);
+  }
 }
 
 // Generate unique booking reference: DS-XXXXXX (e.g. DS-849201)
@@ -808,9 +824,9 @@ function checkInPatientAtomic(bookingReference, clinicDate) {
 
 // Staff Authentication System
 const STAFF_CREDENTIALS = {
-  '1024': { staffId: 'staff_reception', staffName: 'Dental Square Reception', role: 'reception', doctorId: null },
-  '2048': { staffId: 'doc_anuj_kumar', staffName: 'Dr. Anuj Kumar', role: 'dentist', doctorId: 'doc_anuj_kumar' },
-  '4096': { staffId: 'doc_vandana_choudhary', staffName: 'Dr. Kumari Vandana Chaudhury', role: 'dentist', doctorId: 'doc_vandana_choudhary' },
+  '1024': { staffId: 'staff_reception', staffName: 'Clinic Reception', role: 'reception', doctorId: null },
+  '2048': { staffId: 'doc_anuj_kumar', staffName: 'Dr. Aryan Sharma', role: 'dentist', doctorId: 'doc_anuj_kumar' },
+  '4096': { staffId: 'doc_vandana_choudhary', staffName: 'Dr. Priya Mehta', role: 'dentist', doctorId: 'doc_vandana_choudhary' },
   '8192': { staffId: 'staff_owner', staffName: 'Clinic Owner (Admin)', role: 'owner', doctorId: null }
 };
 
@@ -888,7 +904,7 @@ function seedDemoQueueData(dateStr) {
       name: 'Vikram Singh',
       phone: '9835123401',
       docId: 'doc_anuj_kumar',
-      docName: 'Dr. Anuj Kumar',
+      docName: 'Dr. Aryan Sharma',
       servId: 'serv_implants',
       servName: 'Dental Implants',
       time: '09:30',
@@ -905,7 +921,7 @@ function seedDemoQueueData(dateStr) {
       name: 'Sunita Kumari',
       phone: '9835123402',
       docId: 'doc_anuj_kumar',
-      docName: 'Dr. Anuj Kumar',
+      docName: 'Dr. Aryan Sharma',
       servId: 'serv_surgery',
       servName: 'Maxillofacial Surgery',
       time: '10:30',
@@ -923,7 +939,7 @@ function seedDemoQueueData(dateStr) {
       name: 'Amit Verma',
       phone: '9835123403',
       docId: 'doc_vandana_choudhary',
-      docName: 'Dr. Kumari Vandana Chaudhury',
+      docName: 'Dr. Priya Mehta',
       servId: 'serv_rct',
       servName: 'Advanced RCT',
       time: '11:00',
@@ -941,7 +957,7 @@ function seedDemoQueueData(dateStr) {
       name: 'Pooja Sharma',
       phone: '9835123404',
       docId: 'doc_vandana_choudhary',
-      docName: 'Dr. Kumari Vandana Chaudhury',
+      docName: 'Dr. Priya Mehta',
       servId: 'serv_cosmetic',
       servName: 'Cosmetic Dentistry',
       time: '11:30',
@@ -959,7 +975,7 @@ function seedDemoQueueData(dateStr) {
       name: 'Rajesh Mishra',
       phone: '9835123405',
       docId: 'doc_anuj_kumar',
-      docName: 'Dr. Anuj Kumar',
+      docName: 'Dr. Aryan Sharma',
       servId: 'serv_ortho',
       servName: 'Orthodontic Aligners',
       time: '16:00',
@@ -976,7 +992,7 @@ function seedDemoQueueData(dateStr) {
       name: 'Master Aarav Gupta',
       phone: '9835123406',
       docId: 'doc_vandana_choudhary',
-      docName: 'Dr. Kumari Vandana Chaudhury',
+      docName: 'Dr. Priya Mehta',
       servId: 'serv_pediatric',
       servName: 'Pediatric Dentistry',
       time: '17:00',

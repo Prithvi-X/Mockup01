@@ -1,7 +1,7 @@
 {
-  "name": "dental-square-ranchi",
+  "name": "dental-clinic-platform",
   "version": "1.0.0",
-  "description": "Dental Square, Lalpur, Ranchi — Complete Dental Healthcare & Clinic Management System",
+  "description": "White-Label Modern Dental Clinic Platform & Clinical Management System",
   "main": "server/server.js",
   "scripts": {
     "start": "node --experimental-sqlite server/server.js"
@@ -10,13 +10,14 @@
     "node": ">=22.5.0"
   },
   "keywords": [
-    "dental-square",
+    "dental-clinic",
     "clinic-management",
     "appointment-booking",
     "odontogram",
     "healthcare",
-    "sqlite"
+    "sqlite",
+    "white-label"
   ],
-  "author": "Dental Square Ranchi",
+  "author": "Dental Clinic Solutions",
   "license": "ISC"
 }

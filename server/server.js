@@ -1,6 +1,5 @@
 /**
- * Dental Square — HTTP Server & Appointment Booking API
- * Phase 2 Implementation
+ * Clinic Management System — HTTP Server & Appointment Booking API
  * Built with Node.js Native HTTP & SQLite (node:sqlite)
  */
 
@@ -90,10 +89,12 @@ const {
   markCommunicationJobFailed
 } = require('./db');
 const { communicationService } = require('./communication');
+const { clinicConfig } = require('./clinic-config');
 
 const ROOT = path.resolve(__dirname, '..');
 const PORT = process.env.PORT || 3000;
-const CLINIC_PHONE = process.env.CLINIC_PHONE || '+91 98869 82522'; // Authorized / verified Dental Square contact
+const CLINIC_PHONE = process.env.CLINIC_PHONE || clinicConfig.phone || '+91 98765 43210';
+const CLINIC_LOCATION = clinicConfig.address || 'Suite 400, Healthcare Plaza, Medical Center Boulevard, Metro City 560001';
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=UTF-8',
@@ -491,7 +492,7 @@ async function handleCreateAppointment(req, res) {
       success: true,
       ...apptObj,
       appointment: apptObj,
-      clinicLocation: '1st Floor, Amravati Complex, Circular Road, Lalpur, Ranchi, Jharkhand 834001',
+      clinicLocation: CLINIC_LOCATION,
       clinicPhone: CLINIC_PHONE
     });
   } catch (err) {
@@ -814,7 +815,7 @@ async function handleDemoPayAppointment(req, res, reference) {
     patientName: appt.patient_name,
     patientPhone: appt.patient_phone,
     token_number: null,
-    clinicLocation: '1st Floor, Amravati Complex, Circular Road, Lalpur, Ranchi, Jharkhand 834001',
+    clinicLocation: CLINIC_LOCATION,
     clinicPhone: CLINIC_PHONE
   };
 
@@ -876,7 +877,7 @@ function handleGetAppointmentByRef(req, res, reference) {
     paymentReference: row.payment_reference,
     paymentAmount: row.payment_amount,
     holdExpiresAt: row.hold_expires_at,
-    clinicLocation: '1st Floor, Amravati Complex, Circular Road, Lalpur, Ranchi, Jharkhand 834001',
+    clinicLocation: CLINIC_LOCATION,
     clinicPhone: CLINIC_PHONE
   });
 }
@@ -971,20 +972,21 @@ function handleCalendarIcs(req, res, reference) {
 
   const phoneDesc = CLINIC_PHONE ? `\\nPhone: ${CLINIC_PHONE}` : '';
   const isCancelled = row.status === 'CANCELLED';
+  const clinicTitle = clinicConfig.clinicName || 'Apex Dental Studio';
   const icsLines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Dental Square//Appointment Booking Engine//EN',
+    `PRODID:-//${clinicTitle}//Appointment Booking Engine//EN`,
     'CALSCALE:GREGORIAN',
     isCancelled ? 'METHOD:CANCEL' : 'METHOD:PUBLISH',
     'BEGIN:VEVENT',
-    `UID:${row.booking_reference}@dentalsquare.in`,
+    `UID:${row.booking_reference}@apexdentaldemo.com`,
     `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
     `DTSTART:${startUtc}`,
     `DTEND:${endUtc}`,
-    `SUMMARY:Dental Square: ${row.service_name} with ${row.doctor_name}${isCancelled ? ' (CANCELLED)' : ''}`,
-    `DESCRIPTION:Booking Reference: ${row.booking_reference}\\nPatient: ${row.patient_name}\\nDoctor: ${row.doctor_name}\\nService: ${row.service_name}\\nClinic: Dental Square, 1st Floor, Amravati Complex, Circular Road, Lalpur, Ranchi${phoneDesc}`,
-    'LOCATION:Dental Square\\, 1st Floor\\, Amravati Complex\\, Circular Road\\, Lalpur\\, Ranchi\\, Jharkhand 834001',
+    `SUMMARY:${clinicTitle}: ${row.service_name} with ${row.doctor_name}${isCancelled ? ' (CANCELLED)' : ''}`,
+    `DESCRIPTION:Booking Reference: ${row.booking_reference}\\nPatient: ${row.patient_name}\\nDoctor: ${row.doctor_name}\\nService: ${row.service_name}\\nClinic: ${clinicTitle}, ${CLINIC_LOCATION}${phoneDesc}`,
+    `LOCATION:${clinicTitle}\\, ${CLINIC_LOCATION.replace(/,/g, '\\,')}`,
     isCancelled ? 'STATUS:CANCELLED' : 'STATUS:CONFIRMED',
     'END:VEVENT',
     'END:VCALENDAR'
@@ -994,7 +996,7 @@ function handleCalendarIcs(req, res, reference) {
 
   res.writeHead(200, {
     'Content-Type': 'text/calendar; charset=UTF-8',
-    'Content-Disposition': `attachment; filename="DentalSquare-${row.booking_reference}.ics"`,
+    'Content-Disposition': `attachment; filename="Appointment-${row.booking_reference}.ics"`,
     'Content-Length': Buffer.byteLength(icsContent)
   });
   res.end(icsContent);
@@ -1044,11 +1046,11 @@ function getStaffAuth(req) {
     if (clean === 'reception') {
       return { isAuthenticated: true, staffId: 'dev_reception', staffName: 'Dev Receptionist', role: 'reception', doctorId: null };
     }
-    if (clean === 'doctor-anuj' || clean === 'dentist_anuj' || clean === 'dentist-anuj') {
-      return { isAuthenticated: true, staffId: 'doc_anuj_kumar', staffName: 'Dr. Anuj Kumar', role: 'dentist', doctorId: 'doc_anuj_kumar' };
+    if (clean === 'doctor-anuj' || clean === 'dentist_anuj' || clean === 'dentist-anuj' || clean === 'doctor-aryan' || clean === 'aryan') {
+      return { isAuthenticated: true, staffId: 'doc_anuj_kumar', staffName: 'Dr. Aryan Sharma', role: 'dentist', doctorId: 'doc_anuj_kumar' };
     }
-    if (clean === 'doctor-vandana' || clean === 'dentist_vandana' || clean === 'dentist-vandana' || clean === 'doctor-yashika' || clean === 'dentist_yashika' || clean === 'dentist-yashika' || clean === 'yashika') {
-      return { isAuthenticated: true, staffId: 'doc_vandana_choudhary', staffName: 'Dr. Kumari Vandana Chaudhury', role: 'dentist', doctorId: 'doc_vandana_choudhary' };
+    if (clean === 'doctor-vandana' || clean === 'dentist_vandana' || clean === 'dentist-vandana' || clean === 'doctor-priya' || clean === 'priya' || clean === 'doctor-yashika' || clean === 'dentist_yashika' || clean === 'dentist-yashika' || clean === 'yashika') {
+      return { isAuthenticated: true, staffId: 'doc_vandana_choudhary', staffName: 'Dr. Priya Mehta', role: 'dentist', doctorId: 'doc_vandana_choudhary' };
     }
     if (clean === 'owner') {
       return { isAuthenticated: true, staffId: 'dev_owner', staffName: 'Dev Clinic Owner', role: 'owner', doctorId: null };
@@ -2389,6 +2391,9 @@ const server = http.createServer((req, res) => {
 
   // --- REST API ROUTES ---
   if (pathname.startsWith('/api/')) {
+    if (req.method === 'GET' && pathname === '/api/clinic-config') {
+      return sendJson(res, 200, { success: true, config: clinicConfig });
+    }
     if (req.method === 'GET' && pathname === '/api/services') {
       return handleGetServices(req, res);
     }
@@ -2693,7 +2698,7 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`\n======================================================`);
-  console.log(`  Dental Square Server & Booking Engine Running`);
+  console.log(`  Clinic Platform Server & Booking Engine Running (${clinicConfig.clinicName || 'Apex Dental Studio'})`);
   console.log(`  Local URL:   http://0.0.0.0:${PORT}`);
   console.log(`  Booking URL: http://localhost:${PORT}/book.html`);
   console.log(`  Serving Dir: ${ROOT}`);

@@ -1,5 +1,5 @@
 /**
- * Dental Square — Clinic Dashboard & Live Queue Script
+ * Clinic Dashboard & Live Queue Script
  * Phase 3 Implementation
  * Handles operational state, live polling, role switching, queue actions & search
  */
@@ -11,7 +11,7 @@
   const state = {
     token: sessionStorage.getItem('ds_staff_token') || null,
     role: sessionStorage.getItem('ds_staff_role') || 'reception',
-    staffName: sessionStorage.getItem('ds_staff_name') || 'Dental Square Reception',
+    staffName: sessionStorage.getItem('ds_staff_name') || 'Clinic Reception',
     doctorId: sessionStorage.getItem('ds_doctor_id') || null,
     date: new Date().toISOString().split('T')[0],
     activeTab: 'todayFlow',
@@ -289,7 +289,7 @@
       if (el.filterDoctor) el.filterDoctor.value = 'all';
     } else if (role === 'dentist') {
       const isAnuj = doctorId === 'doc_anuj_kumar';
-      el.roleBadge.textContent = isAnuj ? 'DENTIST · DR. ANUJ KUMAR' : 'DENTIST · DR. KUMARI VANDANA CHAUDHURY';
+      el.roleBadge.textContent = isAnuj ? 'DENTIST · DR. ARYAN SHARMA' : 'DENTIST · DR. PRIYA MEHTA';
       el.roleBannerText.textContent = `Specialist consultation view for ${staffName}. Call next patient and complete consultations.`;
       el.laneDrAnuj.style.opacity = isAnuj ? '1' : '0.45';
       el.laneDrVandana.style.opacity = isAnuj ? '0.45' : '1';
@@ -788,7 +788,7 @@
         patient_id: fu.patient_id,
         patient_name: fu.patient_name,
         patient_phone: fu.patient_phone,
-        doctor_name: 'Dr. Anuj Kumar',
+        doctor_name: fu.doctor_name || 'Dr. Aryan Sharma',
         due_date: fu.due_date,
         follow_up_id: fu.id,
         appointment_id: fu.appointment_id,
@@ -1059,7 +1059,7 @@
 
     const variables = {
       patient_name: ctx.patient_name || 'Valued Patient',
-      doctor_name: ctx.doctor_name || 'Dr. Anuj Kumar',
+      doctor_name: ctx.doctor_name || 'Dr. Aryan Sharma',
       appointment_date: ctx.appointment_date || state.date,
       appointment_time: ctx.appointment_time || '10:00 AM',
       booking_reference: ctx.booking_reference || 'DS-000000',
@@ -1099,7 +1099,7 @@
 
     const variables = {
       patient_name: ctx.patient_name || 'Valued Patient',
-      doctor_name: ctx.doctor_name || 'Dr. Anuj Kumar',
+      doctor_name: ctx.doctor_name || 'Dr. Aryan Sharma',
       appointment_date: ctx.appointment_date || state.date,
       appointment_time: ctx.appointment_time || '10:00 AM',
       booking_reference: ctx.booking_reference || 'DS-000000',
