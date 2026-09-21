@@ -1,14 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" fill="none">
-  <!-- Dynamic Green Vitality Base Swooshes -->
-  <path d="M12 36C16 38 24 39 36 36C28 41 18 40 12 36Z" fill="#10B981" />
-  <path d="M8 38C14 42 26 43 40 37C30 43 18 43 8 38Z" fill="#0D7A68" />
-  
-  <!-- Outer Blue Tooth Arch -->
-  <path d="M14 26C12 18 14 10 24 10C34 10 36 18 34 26C33 30 30 35 24 34C18 35 15 30 14 26Z" stroke="#0F2C59" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-  
-  <!-- Inner Concentric Tooth Silhouette -->
-  <path d="M18 25C17 19 18 14 24 14C30 14 31 19 30 25C29 28 27 31 24 30C21 31 19 28 18 25Z" fill="#0F2C59" />
-  
-  <!-- Central Restorative Core -->
-  <path d="M22 23C21.5 20 22 17 24 17C26 17 26.5 20 26 23C25.5 24.5 24.5 25.5 24 25C23.5 25.5 22.5 24.5 22 23Z" fill="#FFFFFF" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" fill="none">
+  <defs>
+    <linearGradient id="apexGradNavy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F2C59" />
+      <stop offset="100%" stop-color="#0D5C58" />
+    </linearGradient>
+    <linearGradient id="apexGradTeal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0D9488" />
+      <stop offset="100%" stop-color="#14B8A6" />
+    </linearGradient>
+    <linearGradient id="apexSwooshGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F2C59" />
+      <stop offset="50%" stop-color="#0D5C58" />
+      <stop offset="100%" stop-color="#14B8A6" />
+    </linearGradient>
+  </defs>
+
+  <!-- Solid White Enamel Core -->
+  <path d="M30 40 C28 25, 40 22, 50 30 C60 22, 72 25, 70 40 C68 56, 62 82, 56 82 C52 82, 51 68, 50 68 C49 68, 48 82, 44 82 C38 82, 32 56, 30 40 Z" fill="#FFFFFF" />
+
+  <!-- Outer Stylized Tooth Outline & Dynamic Apex Swoosh -->
+  <path d="M26 42 C24 22, 38 18, 50 28 C62 18, 76 22, 74 42 C72 60, 65 86, 56 86 C53 86, 51 72, 50 72 C49 72, 47 86, 44 86 C35 86, 28 60, 26 42 Z" stroke="url(#apexSwooshGrad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Dynamic Care Orbit / Horizon Arc -->
+  <path d="M16 46 C24 54, 48 58, 84 38" stroke="url(#apexGradTeal)" stroke-width="5.5" stroke-linecap="round" />
+
+  <!-- Vitality Leaf Crest Accent -->
+  <path d="M72 32 C78 20, 90 18, 90 18 C90 18, 90 30, 78 36 C74 38, 70 36, 72 32 Z" fill="url(#apexGradTeal)" />
+
+  <!-- Radiance Sparkle Star -->
+  <path d="M32 26 L34 20 L36 26 L42 28 L36 30 L34 36 L32 30 L26 28 Z" fill="#FFFFFF" stroke="#0D9488" stroke-width="0.75" />
 </svg>
