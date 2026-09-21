@@ -32,7 +32,7 @@ const DEFAULT_CONFIG = {
       affiliations: 'Senior Specialist · Maxillofacial Surgery | 15+ Yrs Exp',
       operatory: 'Operatory 1',
       pin: '2048',
-      avatar: 'assets/images/doctor-anuj.png'
+      avatar: 'assets/images/doctor-aryan.jpg'
     },
     {
       id: 'doc_priya_mehta',
@@ -43,7 +43,7 @@ const DEFAULT_CONFIG = {
       affiliations: 'Apex Dental Studio | 18+ Yrs Exp',
       operatory: 'Operatory 2',
       pin: '4096',
-      avatar: 'assets/images/doctor-vandana.png'
+      avatar: 'assets/images/doctor-priya.jpg'
     }
   ]
 };

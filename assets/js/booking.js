@@ -214,8 +214,8 @@
   ];
 
   const FALLBACK_DOCTORS = [
-    { id: 'doc_anuj_kumar', full_name: 'Dr. Aryan Sharma', name: 'Dr. Aryan Sharma', qualifications: 'BDS, MDS (Oral & Maxillofacial Surgery)', specialization: 'Oral & Maxillofacial Surgeon, Specialist Implantologist', photo_url: 'assets/images/doctor-anuj.png' },
-    { id: 'doc_vandana_choudhary', full_name: 'Dr. Priya Mehta', name: 'Dr. Priya Mehta', qualifications: 'BDS, MDS (Endodontics)', specialization: 'Endodontist & Restorative Specialist', photo_url: 'assets/images/doctor-vandana.png' }
+    { id: 'doc_anuj_kumar', full_name: 'Dr. Aryan Sharma', name: 'Dr. Aryan Sharma', qualifications: 'BDS, MDS (Oral & Maxillofacial Surgery)', specialization: 'Oral & Maxillofacial Surgeon, Specialist Implantologist', photo_url: 'assets/images/doctor-aryan.jpg' },
+    { id: 'doc_vandana_choudhary', full_name: 'Dr. Priya Mehta', name: 'Dr. Priya Mehta', qualifications: 'BDS, MDS (Endodontics)', specialization: 'Endodontist & Restorative Specialist', photo_url: 'assets/images/doctor-priya.jpg' }
   ];
 
   // --- DATA FETCHING ---
@@ -360,7 +360,7 @@
           name: doc.full_name || doc.name,
           specialization: doc.specialization || '',
           affiliation: doc.affiliations || doc.affiliation || '',
-          photo_url: card.querySelector('img')?.getAttribute('src') || 'assets/images/doctor-anuj.png'
+          photo_url: card.querySelector('img')?.getAttribute('src') || 'assets/images/doctor-aryan.jpg'
         };
       } else {
         // Fallback info from card markup
@@ -369,7 +369,7 @@
           name: card.querySelector('.doc-select-name')?.textContent.trim() || 'Specialist',
           specialization: card.querySelector('.doc-select-spec')?.textContent.trim() || '',
           affiliation: card.querySelector('.doc-select-affil')?.textContent.trim() || '',
-          photo_url: card.querySelector('img')?.getAttribute('src') || 'assets/images/doctor-anuj.png'
+          photo_url: card.querySelector('img')?.getAttribute('src') || 'assets/images/doctor-aryan.jpg'
         };
       }
     }
